@@ -1,0 +1,47 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Generate example data for quarterly DataFrame
+start_date_quarterly = pd.to_datetime('2020-01-01')
+end_date_quarterly = pd.to_datetime('2022-12-31')
+dates_quarterly = pd.date_range(start=start_date_quarterly, end=end_date_quarterly, freq='Q')
+data_quarterly = np.random.rand(len(dates_quarterly))
+df_quarterly = pd.DataFrame(data=data_quarterly, index=dates_quarterly, columns=['Quarterly'])
+
+# Generate example data for monthly DataFrame
+start_date_monthly = pd.to_datetime('2020-01-01')
+end_date_monthly = pd.to_datetime('2022-12-31')
+dates_monthly = pd.date_range(start=start_date_monthly, end=end_date_monthly, freq='M')
+data_monthly = np.random.rand(len(dates_monthly))
+df_monthly = pd.DataFrame(data=data_monthly, index=dates_monthly, columns=['Monthly'])
+
+# Calculate quarterly averages for the monthly data
+df_monthly['QuarterlyAvg'] = df_monthly['Monthly'].resample('Q').mean()
+
+# Increase the size of the plot
+fig, ax1 = plt.subplots(figsize=(12, 6))
+
+# Plot quarterly data with bar
+ax1.bar(df_quarterly.index, df_quarterly['Quarterly'], color='b', width=30, label='Quarterly')
+ax1.set_ylabel('Quarterly Data', color='b')
+ax1.tick_params('y', colors='b')
+
+# Create a secondary y-axis for monthly data and quarterly averages
+ax2 = ax1.twinx()
+ax2.plot(df_monthly.index, df_monthly['Monthly'], color='r', label='Monthly')
+ax2.plot(df_monthly.index, df_monthly['QuarterlyAvg'], linestyle='dashed', color='g', label='Quarterly Avg')
+ax2.set_ylabel('Monthly Data and Quarterly Avg', color='r')
+ax2.tick_params('y', colors='r')
+
+# Set x-axis ticks and labels for better readability
+plt.xticks(np.concatenate([df_quarterly.index, df_monthly.index]), rotation=45, ha='right')
+
+# Display the legend
+fig.tight_layout()
+plt.legend(loc='upper left', bbox_to_anchor=(0.7, 0.9))
+plt.title('Quarterly and Monthly Data Comparison')
+plt.show()
